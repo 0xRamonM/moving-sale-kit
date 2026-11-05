@@ -1,0 +1,150 @@
+@import "tailwindcss";
+
+:root {
+  --background: #faf8f5;
+  --foreground: #1c1a17;
+  --muted: #6f6a62;
+  --surface: #ffffff;
+  --surface-2: #efebe5;
+  --border: #e4dfd7;
+  --accent: #1f5f4a;
+  --accent-soft: #dcefe6;
+  --accent-ink: #143f31;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-ink: var(--accent-ink);
+  --font-sans: var(--font-geist-sans);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+@layer components {
+  .card {
+    @apply overflow-hidden rounded-2xl border border-border bg-surface;
+  }
+  .pill {
+    @apply rounded-full px-2.5 py-1 text-xs font-medium;
+  }
+  .btn {
+    @apply inline-flex min-h-11 items-center justify-center rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-medium transition hover:bg-surface-2 disabled:cursor-not-allowed disabled:opacity-60;
+  }
+  .btn-primary {
+    @apply border-accent bg-accent text-white hover:bg-accent hover:brightness-110;
+  }
+  /* Card buttons: slim on phones, regular from tablet up. */
+  .btn-card {
+    @apply min-h-9 rounded-lg px-2 py-1.5 text-xs sm:min-h-11 sm:rounded-xl sm:px-4 sm:py-2.5 sm:text-sm;
+  }
+  .btn-primary.btn-card {
+    @apply border-transparent bg-accent-soft text-accent-ink hover:bg-accent-soft sm:border-accent sm:bg-accent sm:text-white sm:hover:bg-accent;
+  }
+  [data-picking] .card-cta {
+    display: none;
+  }
+  .btn-sm {
+    @apply min-h-0 rounded-lg px-2.5 py-1.5 text-xs;
+  }
+  .field {
+    @apply block space-y-1 text-sm;
+  }
+  .field > span {
+    @apply font-medium;
+  }
+  .field input,
+  .field textarea,
+  .field select {
+    @apply w-full rounded-xl border border-border bg-surface px-3 py-2 text-base outline-none focus:border-accent focus:ring-2 focus:ring-accent/20;
+  }
+  .modal {
+    @apply m-auto w-[min(28rem,calc(100%-2rem))] rounded-2xl border border-border bg-surface text-foreground shadow-xl backdrop:bg-black/40;
+  }
+  /* Chat: a bottom sheet on phones, a centred panel on larger screens. */
+  .chat-modal {
+    @apply mx-auto mt-auto mb-0 h-[85dvh] w-full max-w-none rounded-t-2xl border border-border bg-surface text-foreground shadow-xl backdrop:bg-black/40 sm:m-auto sm:h-[min(40rem,85dvh)] sm:w-[28rem] sm:rounded-2xl;
+  }
+  .bubble {
+    @apply w-fit max-w-[85%] rounded-2xl px-3.5 py-2 text-[0.95rem] leading-snug;
+  }
+  .bubble-bot {
+    @apply rounded-bl-md bg-surface-2;
+  }
+  .bubble-user {
+    @apply ml-auto rounded-br-md bg-accent text-white;
+  }
+  .dot {
+    @apply size-1.5 animate-bounce rounded-full bg-muted;
+  }
+  .gallery {
+    @apply flex h-full snap-x snap-mandatory overflow-x-auto;
+    scrollbar-width: none;
+  }
+  .gallery-arrow {
+    @apply absolute top-1/2 hidden size-8 -translate-y-1/2 items-center justify-center rounded-full bg-white/85 text-neutral-900 opacity-0 shadow-md transition group-hover/gallery:opacity-100 hover:bg-white focus-visible:opacity-100 pointer-fine:flex;
+  }
+  /* Category chips, all visible at once: a 3×2 grid of two-line buttons on phones, one wrapping row from tablet up. */
+  .chip-row {
+    @apply mb-4 grid grid-cols-3 gap-1.5 sm:flex sm:flex-wrap sm:gap-2;
+  }
+  .chip {
+    @apply rounded-xl border border-border bg-surface px-2 py-1.5 text-center text-[13px] leading-tight hover:bg-surface-2 sm:min-h-10 sm:rounded-full sm:px-3.5 sm:py-2 sm:text-sm sm:whitespace-nowrap;
+  }
+  .chip-active,
+  .chip-active:hover {
+    @apply border-foreground bg-foreground text-background;
+  }
+  /* Full-screen photo viewer. */
+  .lightbox {
+    @apply fixed inset-0 m-0 h-dvh max-h-none w-screen max-w-none border-0 bg-black/95 p-0 backdrop:bg-black/70;
+  }
+  .lightbox-arrow {
+    @apply absolute top-1/2 hidden size-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white/25 pointer-fine:flex;
+  }
+  .gallery > * {
+    @apply h-full w-full shrink-0 snap-center;
+  }
+}
+
+/* Cards outside the chosen category are hidden; they stay in the HTML for search engines and agents.
+   Unlayered on purpose so it beats the cards' `flex` utility class. */
+[data-filter="clothing"] li[data-category]:not([data-category="clothing"]) {
+  display: none;
+}
+[data-filter="sports"] li[data-category]:not([data-category="sports"]) {
+  display: none;
+}
+[data-filter="travel"] li[data-category]:not([data-category="travel"]) {
+  display: none;
+}
+[data-filter="electronics"] li[data-category]:not([data-category="electronics"]) {
+  display: none;
+}
+[data-filter="house"] li[data-category]:not([data-category="house"]) {
+  display: none;
+}
+[data-filter="clothing"] .later-section:not(:has(li[data-category="clothing"])) {
+  display: none;
+}
+[data-filter="sports"] .later-section:not(:has(li[data-category="sports"])) {
+  display: none;
+}
+[data-filter="travel"] .later-section:not(:has(li[data-category="travel"])) {
+  display: none;
+}
+[data-filter="electronics"] .later-section:not(:has(li[data-category="electronics"])) {
+  display: none;
+}
+[data-filter="house"] .later-section:not(:has(li[data-category="house"])) {
+  display: none;
+}
