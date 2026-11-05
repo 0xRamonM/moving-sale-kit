@@ -124,7 +124,7 @@ To keep your own visits out of the stats on a phone where you don't log in, open
 pnpm dev
 ```
 
-Open http://localhost:3000. It uses the same database and Blob store as production. If you want separate test data, make a Neon branch and put its `DATABASE_URL` in `.env.local`.
+Open the local URL it prints (Next.js picks the next free port if 3000 is taken). It uses the same database and Blob store as production. If you want separate test data, make a Neon branch and put its `DATABASE_URL` in `.env.local`.
 
 ---
 
