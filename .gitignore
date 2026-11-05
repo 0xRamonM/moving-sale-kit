@@ -43,5 +43,6 @@ next-env.d.ts
 
 # agent skills installed by the Vercel CLI
 .agents/
-.claude/
+.claude/*
+!.claude/commands/
 skills-lock.json

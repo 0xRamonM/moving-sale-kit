@@ -22,11 +22,38 @@ It was built for a real sale in Lisbon, so the public page is **bilingual Portug
 
 ---
 
-## Set it up (about 15 minutes)
+## Set it up
+
+### Option A: let your AI agent do it (about 5 minutes)
+
+If you have [Claude Code](https://claude.com/claude-code) (or a similar coding agent) with the GitHub CLI (`gh`) and Vercel CLI (`vercel`) installed and logged in, open it in any empty folder and paste:
+
+> Set up my own sale site from https://github.com/0xRamonM/moving-sale-kit, following its SETUP.md.
+
+It will ask you three things in one message: your first name, a public pickup spot (place, neighbourhood, city) and an [Anthropic API key](https://console.anthropic.com/settings/keys) for the buyer chat. It then does the rest:
+
+- creates your copy of the repo,
+- fills in your details,
+- creates the Vercel project, Neon database and photo storage,
+- sets the secrets, creates the tables and deploys.
+
+At the end it gives you your site URL and admin password.
+
+If you've already cloned the repo, run `/setup` inside it, or just say "make this work".
+
+The only thing you might be asked to do in a browser is accept Neon's free-plan terms on Vercel, and only the first time your Vercel account uses Neon.
+
+The agent follows [`SETUP.md`](SETUP.md), and the provisioning is a single idempotent script, [`scripts/setup.mjs`](scripts/setup.mjs), which you can also run yourself:
+
+```bash
+node scripts/setup.mjs --project my-sale --anthropic-key sk-ant-... --region fra1
+```
+
+### Option B: by hand (about 15 minutes)
 
 You need accounts on [GitHub](https://github.com), [Vercel](https://vercel.com) and [Anthropic](https://console.anthropic.com) (for the API key), plus Node 20+ and [pnpm](https://pnpm.io) if you want to run it locally.
 
-### 1. Copy the repo
+#### 1. Copy the repo
 
 Click **Use this template** (or **Fork**) on GitHub, then clone your copy:
 
@@ -36,7 +63,7 @@ cd <your-repo>
 pnpm install
 ```
 
-### 2. Put in your details
+#### 2. Put in your details
 
 Edit **`lib/site.ts`**. It's the only file with seller-specific settings:
 
@@ -54,7 +81,7 @@ Edit **`lib/site.ts`**. It's the only file with seller-specific settings:
 
 Everything in this file ends up public. Never put your phone number in it: buyers give you theirs, and you message them first.
 
-### 3. Create the Vercel project and storage
+#### 3. Create the Vercel project and storage
 
 1. In Vercel, click **Add New → Project** and import your repo. The first deploy can fail because env vars are missing. That's fine.
 2. In the project, go to **Storage → Create Database → Neon** (Postgres) and connect it. This adds `DATABASE_URL`.
@@ -68,7 +95,7 @@ Everything in this file ends up public. Never put your phone number in it: buyer
 
 All the variables are listed in [`.env.example`](.env.example).
 
-### 4. Create the tables
+#### 4. Create the tables
 
 From your machine, with the [Vercel CLI](https://vercel.com/docs/cli):
 
@@ -80,7 +107,7 @@ pnpm migrate
 
 `pnpm migrate` is safe to run again; it only adds what's missing. You can also copy `DATABASE_URL` from Neon into `.env.local` by hand and run `pnpm migrate`.
 
-### 5. Deploy and add items
+#### 5. Deploy and add items
 
 Push to `main` (or click **Redeploy** in Vercel). Then:
 
@@ -126,13 +153,9 @@ scripts/migrate.mjs       creates and updates the tables
 
 The public page is cached and refreshed whenever you change an item in the admin. If you edit the database directly, call `POST /api/revalidate` with `Authorization: Bearer $SESSION_SECRET` to refresh it.
 
-## Setting it up with an AI coding agent
+## Notes for agents
 
-Paste this into Claude Code (or a similar tool) from inside your clone:
-
-> Set up this repo as my sale site. Read README.md and AGENTS.md first. Ask me for my first name, the city, the neighbourhood, a public pickup spot and its Google Maps link, my time zone, who will handle pickups, and where I'll advertise. Fill those into lib/site.ts. Then walk me through the Vercel steps in the README (project, Neon, public Blob store, env vars), run `vercel env pull .env.local` and `pnpm migrate`, run `pnpm build` to check everything, and push to deploy. Never put my phone number or home address in the code.
-
-Notes for agents:
+For first-time setup, follow [`SETUP.md`](SETUP.md). For changes later on:
 
 - This is Next.js 16 with `cacheComponents`. Read `AGENTS.md` and the docs in `node_modules/next/dist/docs/` before changing framework code.
 - Server actions that change items call `itemsChanged()`, which updates the cache tag and refreshes the page.
